@@ -1,38 +1,36 @@
-import React, { useState } from 'react';
+import { useState } from 'react';
 import { useGetProductsQuery, useGetProductByIdQuery, useUpdateProductMutation } from '../redux/productApi';
 
 const Product = () => {
+  
   const [selectedProduct, setSelectedProduct] = useState(null);
-  const [updatedTitle, setUpdatedTitle] = useState(); 
+  const [updatedTitle, setUpdatedTitle] = useState();
 
-  const { data: products } = useGetProductsQuery();
-  // console.log('Products', products);
+  const { data: products, refetch: refetchProducts } = useGetProductsQuery();
+  const { data: productById } = useGetProductByIdQuery(selectedProduct);
+  const [updateProduct, { data, error, isLoading }] = useUpdateProductMutation()
+  // console.log(data, error, isLoading);
 
-  const {  data: productById, error, isLoading } = useGetProductByIdQuery(selectedProduct);
-  console.log('ProductById', productById);
 
-  const updateProductMutation = useUpdateProductMutation();
+
+  const handleUpdate = async (id) => {
+    console.log(id);
+    if (id) {
+      const prod = {
+        title: "xxxx",
+      }
+      await updateProduct({
+        id: id,
+        data: prod
+      })
+      await refetchProducts();
+    }
+  }
 
 
   const handleSingleGet = (id) => {
     setSelectedProduct(id);
   };
-
-  const handleUpdateProduct = async () => {
-    try {
-      // Assuming you have the updated title in the state
-      const { data: updatedProduct } = await updateProductMutation.mutateAsync({
-        id: selectedProduct,
-        title: updatedTitle,
-        // Add other fields as needed for the update
-      });
-
-      console.log('Updated Product:', updatedProduct);
-    } catch (error) {
-      console.error('Error updating product:', error);
-    }
-  }
-
 
   return (
     <div>
@@ -42,30 +40,12 @@ const Product = () => {
           <li key={p.id}>
             {p.title}
             <button onClick={() => handleSingleGet(p.id)}>Get</button>
-            
+            <button onClick={() => handleUpdate(p.id)}>Update</button>
           </li>
         ))}
       </ul>
-
-      {selectedProduct !== "" && (
-        <div>
-          <h2>Product by ID</h2>
-          {/* <p>{productById ? productById.title : 'Loading...'}</p> */}
-          
-          {/* Update Product Section */}
-          <div>
-            <input
-              type="text"
-              value={updatedTitle}
-              onChange={(e) => setUpdatedTitle(e.target.value)}
-            />
-            <button onClick={handleUpdateProduct}>Update Product</button>
-          </div>
-        </div>
-      )}
     </div>
   );
 };
 
 export default Product;
-

@@ -11,13 +11,22 @@ export const productApi = createApi({
     getProductById: builder.query({
       query: (id) => `products/${id}`,
     }),
+
     updateProduct: builder.mutation({
-      query: ({ id, ...data }) => ({
+      query: ({ id, data }) => ({
         url: `products/${id}`,
         method: 'PUT',
-        body: data,
+        headers: { 'Content-Type': 'application/json'},
+        // body: data,
+        body: JSON.stringify(data),
       }),
     }),
+  
+  
+  
+  
+    
+
     deleteProduct: builder.mutation({
       query: (id) => ({
         url: `products/${id}`,
