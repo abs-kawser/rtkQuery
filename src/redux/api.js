@@ -15,8 +15,6 @@ export const myApi = createApi({
       query: (id) => `todos/${id}`,
     }),
 
-
-    
     updateTodo: builder.mutation({
       query: ({ id, ...data }) => ({
         url: `todos/${id}`,
